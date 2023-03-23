@@ -24,7 +24,11 @@ class Footer extends StatelessWidget {
 }
 
 class DialogUI extends StatelessWidget {
-  const DialogUI({Key? key}) : super(key: key);
+  DialogUI({Key? key, this.myvar, this.increment, this.nameList}) : super(key: key);
+  final myvar;
+  final increment;
+  final nameList;
+  var inputData = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +42,10 @@ class DialogUI extends StatelessWidget {
         children: [
           Container(
             margin: EdgeInsets.only(bottom: 20),
-            child: TextFormField(
+            child: TextField(
+              controller: inputData,
               decoration: InputDecoration(
-                hintText: 'Enter your name',
+                hintText: 'Enter your name :)',
               ),
             ),
           ),
@@ -55,7 +60,10 @@ class DialogUI extends StatelessWidget {
                   },
                   child: Text('취소')),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    increment();
+                    nameList.add(inputData.text);
+                  },
                   style: ElevatedButton.styleFrom(fixedSize: Size(80, 40)),
                   child: Text('완료'))
             ],
@@ -76,6 +84,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var likeCnts = [0, 0, 0];
   var name = ['연다은봄', '연라푸', '연똥개'];
+  var somethingcool = 0;
+  increment() {
+    setState(() {
+      somethingcool++;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +101,7 @@ class _MyAppState extends State<MyApp> {
             showDialog(
                 context: context,
                 builder: (context) {
-                  return DialogUI();
+                  return DialogUI(myvar: somethingcool, increment: increment, nameList: name);
                 });
           },
         ),
