@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:contacts_service/contacts_service.dart';
 
 void main() {
   runApp(MaterialApp(home: MyApp()));
@@ -93,6 +94,17 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  getPermission() async {
+    var contactStatus = await Permission.contacts.status;
+    if (contactStatus.isGranted) {
+      print('드디어 권한 설정 허락됨 으이구');
+    } else if (contactStatus.isDenied) {
+      print('연락처를 들여다보지 않았으면 좋겠다네요');
+    } else if (contactStatus.isPermanentlyDenied) {
+      openAppSettings();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,15 +120,26 @@ class _MyAppState extends State<MyApp> {
                 });
           },
         ),
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: Text('귀여운 연락처 '),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  getPermission();
+                },
+                icon: Icon(Icons.contacts))
+          ],
+        ),
         body: Column(
           children: [
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               SizedBox(height: 40),
               Text('가나다순'),
-              TextButton(onPressed: () {
-                // 이름 가나다순 정렬
-              }, child: Icon(Icons.arrow_drop_down))
+              TextButton(
+                  onPressed: () {
+                    // 이름 가나다순 정렬
+                  },
+                  child: Icon(Icons.arrow_drop_down))
             ]),
             ListView.builder(
               scrollDirection: Axis.vertical,
