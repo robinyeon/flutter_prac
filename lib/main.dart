@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(MaterialApp(home: MyApp()));
@@ -24,10 +25,8 @@ class Footer extends StatelessWidget {
 }
 
 class DialogUI extends StatelessWidget {
-  DialogUI({Key? key, this.myvar, this.increment, this.nameList}) : super(key: key);
-  final myvar;
-  final increment;
-  final nameList;
+  DialogUI({Key? key, this.addOne}) : super(key: key);
+  final addOne;
   var inputData = TextEditingController();
 
   @override
@@ -61,8 +60,11 @@ class DialogUI extends StatelessWidget {
                   child: Text('취소')),
               ElevatedButton(
                   onPressed: () {
-                    increment();
-                    nameList.add(inputData.text);
+                    if (inputData.text == "") {
+                      // 빈칸으로 완료버튼 누르면 추가 안되는게끔.
+                    }
+                    addOne(inputData.text);
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(fixedSize: Size(80, 40)),
                   child: Text('완료'))
@@ -82,15 +84,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var likeCnts = [0, 0, 0];
+  var likeCnt = 0;
   var name = ['연다은봄', '연라푸', '연똥개'];
-  var somethingcool = 0;
-  increment() {
+
+  addOne(newName) {
     setState(() {
-      somethingcool++;
+      name.add(newName);
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -101,27 +102,55 @@ class _MyAppState extends State<MyApp> {
             showDialog(
                 context: context,
                 builder: (context) {
-                  return DialogUI(myvar: somethingcool, increment: increment, nameList: name);
+                  return DialogUI(
+                    addOne: addOne,
+                  );
                 });
           },
         ),
         appBar: AppBar(),
-        body: ListView.builder(
-          itemCount: 3,
-          itemBuilder: (context, idx) {
-            return ListTile(
-              leading: Text(likeCnts[idx].toString()),
-              title: Text(name[idx]),
-              trailing: ElevatedButton(
-                child: Text('좋아요'),
-                onPressed: () {
-                  setState(() {
-                    likeCnts[idx]++;
-                  });
-                },
-              ),
-            );
-          },
+        body: Column(
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              SizedBox(height: 40),
+              Text('가나다순'),
+              TextButton(onPressed: () {
+                // 이름 가나다순 정렬
+              }, child: Icon(Icons.arrow_drop_down))
+            ]),
+            ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: name.length,
+              itemBuilder: (context, idx) {
+                return ListTile(
+                  leading: Text(likeCnt.toString()),
+                  title: Text(name[idx]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        child: Text('좋아요'),
+                        onPressed: () {
+                          setState(() {
+                            likeCnt++;
+                          });
+                        },
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              name.removeAt(idx);
+                            });
+                          },
+                          child:
+                              Text('삭제', style: TextStyle(color: Colors.grey)))
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         bottomNavigationBar: BottomAppBar(
           child: Footer(),
