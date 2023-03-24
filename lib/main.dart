@@ -85,8 +85,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var likeCnt = 0;
-  var name = ['연다은봄', '연라푸', '연똥개'];
+  int likeCnt = 0;
+  List<String> name = ['연다은봄', '연라푸', '연똥개'];
 
   addOne(newName) {
     setState(() {
